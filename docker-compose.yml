@@ -1,0 +1,35 @@
+version: '3.4'
+
+services:
+  # api:
+  #   container_name: twitter-clone-api
+  #   restart: always
+  #   build: ./api
+  #   environment:
+  #     NODE_ENV: production
+  #     MONGO_URI: mongodb://db:27017/twitter-clone-db
+  #     MONGO_USERNAME: user
+  #     MONGO_PASSWORD: secret
+  #   links:
+  #     - db
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./api:/usr/src/app
+  db:
+    container_name: twitter-clone-db
+    image: mongo:6.0.2
+    restart: always
+    # build: ./db
+    ports:
+      - 27017:27017
+    volumes:
+      - ./db/data:/data/db
+      - ./db/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_DATABASE: twitter-clone-db
+      MONGO_USERNAME: user
+      MONGO_PASSWORD: secret
+    # command: mongod --auth
