@@ -5,12 +5,18 @@ async function getOne(req, res) {
     try {
         tweet = await Tweet.findById(req.params.id);
     } catch(err){
-        res.status(500).send({
+        return res.status(500).send({
             status: 'error',
             code: 500,
             message: err,
         });
-        return;
+    }
+    
+    if(!tweet) {
+        return res.status(404).send({
+            status: 'fail',
+            data: { id: 'Tweet not found' },
+        });
     }
     res.status(200).send({
         status: 'success',
@@ -21,15 +27,14 @@ async function getOne(req, res) {
 async function getMany(req, res) {
     let tweets;
     try {
-        tweets = await Tweet.find(res.query);
+        tweets = await Tweet.find(req.query);
     } catch(err) {
         console.log(err);
-        res.status(500).send({
+        return res.status(500).send({
             status: 'error',
             code: 500,
             message: err,
         });
-        return;
     }
     res.status(200).send({
         status: 'success',
@@ -47,24 +52,18 @@ async function create(req, res) {
     try {
         await tweet.save();
     } catch(err) {
-        if(err.code === 11000) {
-            res.status(409).send({
-                status: 'fail',
-                data: { tweetname: 'Tweetname already exists' }
-            });
-        } else if(err.name === 'ValidationError') {
-            res.status(400).send({
+        if(err.name === 'ValidationError') {
+            return res.status(400).send({
                 status: 'fail',
                 data: { tweetname: 'Tweetname is required',  }
             });
         } else {
-            res.status(500).send({
+            return res.status(500).send({
                 status: 'error',
                 code: 500,
                 message: err,
             });
         }
-        return;
     }
     res.status(201).send({
         status: 'success',
@@ -83,46 +82,74 @@ async function update(req, res) {
         tweet = await Tweet.findByIdAndUpdate(req.params.id, fields);
     } catch(err) {
         if(err.code === 11000) {
-            res.status(409).send({
+            return res.status(409).send({
                 status: 'fail',
                 data: { tweetname: 'Tweetname already exists' }
             });
         } else {
-            res.status(500).send({
+            return res.status(500).send({
                 status: 'error',
                 code: 500,
                 message: err,
             });
         }
-        return;
     }
+    if(!tweet) {
+        return res.status(404).send({
+            status: 'fail',
+            data: { id: 'Tweet not found' },
+        });
+    }
+
     res.status(200).send({
         status: 'success',
         data: fields,
     });
 }
 
-function remove(req, res) {
+async function removeOne(req, res) {
     let tweet;
-    
     try {
-        tweet = Tweet.findOneDelete(req.params.id);
+        tweet = await Tweet.findByIdAndDelete(req.params.id);
     }catch(err) {
-        res.status(500).send({
+        return res.status(500).send({
             status: 'error',
             code: 500,
             message: err,
         });
 
-        return;
     }
+    if(!tweet) {
+        return res.status(404).send({
+            status: 'fail',
+            data: { id: 'Tweet not found' },
+        });
+    }
+
     res.status(200).send({
         status: 'success',
         data: { id: tweet._id },
     });
 }
 
+async function removeMany(req, res) {
+    let tweets;
+    try {
+        tweets = await Tweet.deleteMany(req.query);
+    } catch(err) {
+        return res.status(500).send({
+            status: 'error',
+            code: 500,
+            message: err,
+        });
+    }
+    res.status(200).send({
+        status: 'success',
+        data: { count: tweets.deletedCount },
+    });
+}
+
 const UPDATABLE_FIELDS = ['text'];
 const STARTABLE_FIELDS = ['text', 'by'];
 
-module.exports = { getOne, getMany, create, update, remove };
+module.exports = { getOne, getMany, create, update, removeOne, removeMany };
