@@ -18,49 +18,82 @@ const userSchema = new Schema({
         required: true,
     },
     bio: String,
-    interests: [String],
-    followers: [
-        {
-            _id: {
-                type: Number,
-                required: true,
-                ref: 'User',
-            },
-            username: {
-                type: String,
-                required: true,
-            }
-        }
-    ],
-    following: [
-        {
-            _id: {
-                type: Number,
-                required: true,
-                ref: 'User',
-            },
-            username: {
-                type: String,
-                required: true,
-            }
-        }
-    ],
-    likes: [{
-        _id: {
-            type: Number,
-            required: true,
-            ref: 'Tweet',
-        },
-        text: String,
-    }],
-    tweets: [{
-        _id: {
-            type: Number,
-            required: true,
-            ref: 'Tweet',
-        },
-        text: String,
-    }],
+    interests: {
+        type: [String],
+        default: undefined,
+    },
+    // followers: {
+    //     type: [{
+    //         _id: {
+    //             type: Number,
+    //             required: true,
+    //             ref: 'User',
+    //         },
+    //         username: {
+    //             type: String,
+    //             required: true,
+    //         }
+    //     }],
+    //     default: undefined,
+    // },
+    followers: {
+        type: [Number],
+        default: undefined,
+        ref: 'User',
+    },
+    // following: {
+    //     type: [{
+    //         _id: {
+    //             type: Number,
+    //             required: true,
+    //             ref: 'User',
+    //         },
+    //         username: {
+    //             type: String,
+    //             required: true,
+    //         }
+    //     }],
+    //     default: undefined,
+    // },
+    following: {
+        type: [Number],
+        default: undefined,
+        ref: 'User',
+    },
+    // likes: {
+    //     type: [{
+    //         _id: {
+    //             type: Number,
+    //             required: true,
+    //             ref: 'Tweet',
+    //         },
+    //         text: String,
+    //     }],
+    //     default: undefined,
+    // },
+    // tweets: {
+    //     type: [{
+    //         _id: {
+    //             type: Number,
+    //             required: true,
+    //             ref: 'Tweet',
+    //         },
+    //         text: String,
+    //     }],
+    //     default: undefined,
+    // },
+    likes: {
+        type: [Number],
+        default: undefined,
+        required: true,
+        ref: 'Tweet',
+    },
+    tweets: {
+        type: [String],
+        default: undefined,
+        required: true,
+        ref: 'Tweet',
+    },
 });
 
 userSchema.pre('save', async function (next) {

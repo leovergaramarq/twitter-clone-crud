@@ -6,18 +6,22 @@ const { Schema } = mongoose;
 const tweetSchema = new Schema({
     _id: {
         type: Number,
-        default: async () => Counter.getNextSequence('tweet_id'),
     },
+    // by: {
+    //     _id: {
+    //         type: Number,
+    //         required: true,
+    //         ref: 'User',
+    //     },
+    //     username: {
+    //         type: String,
+    //         required: true,
+    //     }
+    // },
     by: {
-        _id: {
-            type: Number,
-            required: true,
-            ref: 'User',
-        },
-        username: {
-            type: String,
-            required: true,
-        }
+        type: Number,
+        required: true,
+        ref: 'User',
     },
     text: {
         type: String,
@@ -28,17 +32,26 @@ const tweetSchema = new Schema({
         default: new Date(),
         required: true,
     },
-    likes: [{
-        _id: {
-            type: Number,
-            required: true,
-            ref: 'User',
-        },
-        username: {
-            type: String,
-            required: true,
-        }
-    }],
+    // likes: {
+    //     type: [{
+    //         _id: {
+    //             type: Number,
+    //             required: true,
+    //             ref: 'User',
+    //         },
+    //         username: {
+    //             type: String,
+    //             required: true,
+    //         }
+    //     }],
+    //     default: undefined,
+    // },
+    likes: {
+        type: [Number],
+        default: undefined,
+        required: true,
+        ref: 'User',
+    },
 });
 
 tweetSchema.pre('save', async function (next) {
