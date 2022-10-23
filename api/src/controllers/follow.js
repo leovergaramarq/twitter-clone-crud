@@ -1,37 +1,81 @@
 const User = require('../models/User');
 
-function create(req, res) {
-    const { user, follow } = req.body;
-    User.findOneAndUpdate({ username: user }, { $push: { following: follow } }, (err, user) => {
-        if (err) {
-            res.status(500).send({
-                status: 500,
-                message: err.message,
-            });
-        } else {
-            res.status(200).send({
-                status: 200,
-                data: user,
-            });
-        }
-    });
+async function create(req, res) {
+    const { user: idUser, follow: idFollow } = req.body;
+    if(idUser === idFollow) {
+        return res.status(409).send({
+            status: 'fail',
+            data: { idUser: 'Users cannot follow themselves' }
+        });
+    }
+
+    const session = await User.startSession();
+    session.startTransaction();
+    try {
+        const opts = { session, new: true };
+        const user = await User.findByIdAndUpdate(idUser, { $addToSet: { following: idFollow } }, opts);
+        const follow = await User.findByIdAndUpdate(idFollow, { $addToSet: { followers: idUser } }, opts);
+        
+        await session.commitTransaction();
+        session.endSession();
+        res.status(200).send({
+            status: 'success',
+            data: {
+                user: {
+                    id: user._id,
+                    following: user.following,
+                },
+                follow: {
+                    id: follow._id,
+                    followers: follow.followers,
+                }
+            },
+        });
+    } catch(err) {
+        console.log(err);
+        await session.abortTransaction();
+        session.endSession();
+        res.status(500).send({
+            status: 'error',
+            code: 500,
+            message: err,
+        });
+    }
 }
 
-function remove(req, res) {
-    const { user, follow } = req.body;
-    User.findOneAndUpdate({ username: user }, { $pull: { following: follow } }, (err, user) => {
-        if (err) {
-            res.status(500).send({
-                status: 500,
-                message: err.message,
-            });
-        } else {
-            res.status(200).send({
-                status: 200,
-                data: user,
-            });
-        }
-    });
+async function remove(req, res) {
+    const { user: idUser, follow: idFollow } = req.body;
+
+    const session = await User.startSession();
+    session.startTransaction();
+    try {
+        const opts = { session, new: true };
+        const user = await User.findByIdAndUpdate(idUser, { $pull: { following: idFollow } }, opts);
+        const follow = await User.findByIdAndUpdate(idFollow, { $pull: { followers: idUser } }, opts);
+        await session.commitTransaction();
+        session.endSession();
+        res.status(200).send({
+            status: 'success',
+            data: {
+                user: {
+                    id: user._id,
+                    following: user.following,
+                },
+                follow: {
+                    id: follow._id,
+                    followers: follow.followers,
+                }
+            },
+        });
+    } catch(err) {
+        await session.abortTransaction();
+        session.endSession();
+        res.status(500).send({
+            status: 'error',
+            code: 500,
+            message: err,
+        });
+    }
 }
 
 module.exports = {

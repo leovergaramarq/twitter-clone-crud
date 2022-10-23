@@ -30,7 +30,6 @@ const tweetSchema = new Schema({
     date: {
         type: Date,
         default: new Date(),
-        required: true,
     },
     // likes: {
     //     type: [{
@@ -49,7 +48,6 @@ const tweetSchema = new Schema({
     likes: {
         type: [Number],
         default: undefined,
-        required: true,
         ref: 'User',
     },
 });

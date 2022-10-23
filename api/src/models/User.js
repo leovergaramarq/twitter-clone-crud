@@ -85,13 +85,11 @@ const userSchema = new Schema({
     likes: {
         type: [Number],
         default: undefined,
-        required: true,
         ref: 'Tweet',
     },
     tweets: {
         type: [String],
         default: undefined,
-        required: true,
         ref: 'Tweet',
     },
 });
