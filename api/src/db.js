@@ -8,8 +8,6 @@ const options = {
 	// connectTimeoutMS: 10000,
 };
 
-console.log(MONGO_URI);
-
 (async () => {
 	try {
 		const db = await mongoose.connect(MONGO_URI, options);

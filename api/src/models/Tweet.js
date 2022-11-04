@@ -27,7 +27,7 @@ const tweetSchema = new Schema({
         type: String,
         required: true,
     },
-    date: {
+    createdAt: {
         type: Date,
         default: new Date(),
     },
@@ -50,11 +50,11 @@ const tweetSchema = new Schema({
         default: undefined,
         ref: 'User',
     },
-});
+}, { versionKey: false });
 
 tweetSchema.pre('save', async function (next) {
     this._id = await Counter.getNextSequence('tweet_id');
-    // next();
+    next();
 });
 
 module.exports = mongoose.model('Tweet', tweetSchema);

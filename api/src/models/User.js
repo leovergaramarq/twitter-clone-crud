@@ -92,11 +92,11 @@ const userSchema = new Schema({
         default: undefined,
         ref: 'Tweet',
     },
-});
+}, { versionKey: false });
 
 userSchema.pre('save', async function (next) {
     this._id = await Counter.getNextSequence('user_id');
-    // next();
+    next();
 });
 
 module.exports = mongoose.model('User', userSchema);
