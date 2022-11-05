@@ -7,17 +7,6 @@ const tweetSchema = new Schema({
     _id: {
         type: Number,
     },
-    // by: {
-    //     _id: {
-    //         type: Number,
-    //         required: true,
-    //         ref: 'User',
-    //     },
-    //     username: {
-    //         type: String,
-    //         required: true,
-    //     }
-    // },
     by: {
         type: Number,
         required: true,
@@ -31,20 +20,6 @@ const tweetSchema = new Schema({
         type: Date,
         default: new Date(),
     },
-    // likes: {
-    //     type: [{
-    //         _id: {
-    //             type: Number,
-    //             required: true,
-    //             ref: 'User',
-    //         },
-    //         username: {
-    //             type: String,
-    //             required: true,
-    //         }
-    //     }],
-    //     default: undefined,
-    // },
     likes: {
         type: [Number],
         default: undefined,

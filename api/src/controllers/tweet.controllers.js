@@ -52,7 +52,7 @@ async function readMany(req, res) {
 
 async function createOne(req, res) {
     const fields = filterFields(req.body, STARTABLE_FIELDS);
-    console.log(fields);
+    // console.log(fields);
     const tweet = new Tweet(fields);
     const session = await Tweet.startSession();
     session.startTransaction();
@@ -133,28 +133,33 @@ async function deleteOne(req, res) {
     let tweet;
     const data = { likes: [] };
 
-    const session = await Tweet.startSession();
-    session.startTransaction();
+    const tweetSession = await Tweet.startSession();
+    tweetSession.startTransaction();
+    const userSession = await User.startSession();
+    userSession.startTransaction();
     try {
-        const opts = { session };
-        tweet = await Tweet.findByIdAndDelete(id, opts);
+        const tweetOpts = { session: tweetSession };
+        const userOpts = { session: userSession };
+        tweet = await Tweet.findByIdAndDelete(id, tweetOpts);
         if(!tweet) throw new Error('Not found');
         
-        data.tweet = tweet._id;
-        tweet.likes && tweet.likes.forEach(async userId => {
-            const user = await User.findByIdAndUpdate(userId, {
-                $pull: { likes: tweet._id }
-            }, opts);
-            data.likes.push({
-                id: userId,
-                status: user ? 'Updated' : 'Not found',
-            });
-        });
-        await session.commitTransaction();
-        session.endSession();
+        if(tweet.likes) {
+            for(let like of tweet.likes) {
+                like = await User.findByIdAndUpdate(like, {
+                    $pull: { likes: tweet._id }
+                }, userOpts);
+                data.likes.push(like._id);
+            }
+        }
+        await tweetSession.commitTransaction();
+        tweetSession.endSession();
+        await userSession.commitTransaction();
+        userSession.endSession();
     } catch(err) {
-        await session.abortTransaction();
-        session.endSession();
+        await tweetSession.abortTransaction();
+        tweetSession.endSession();
+        await userSession.commitTransaction();
+        userSession.endSession();
         if(err.message === 'Not found') {
             return res.status(404).send({
                 status: 'fail',
@@ -171,40 +176,7 @@ async function deleteOne(req, res) {
         status: 'success',
         data,
     });
-    // try {
-    //     tweet = await Tweet.findByIdAndDelete(req.params.id);
-    // }catch(err) {
-    //     return res.status(500).send({
-    //         status: 'error',
-    //         code: 500,
-    //         message: err,
-    //     });
-
-    // }
-    // if(!tweet) {
-    //     return res.status(404).send({
-    //         status: 'fail',
-    //         data: { id: 'Tweet not found' },
-    //     });
-    // }
 }
-
-// async function deleteMany(req, res) {
-//     let tweets;
-//     try {
-//         tweets = await Tweet.deleteMany(req.query);
-//     } catch(err) {
-//         return res.status(500).send({
-//             status: 'error',
-//             code: 500,
-//             message: err,
-//         });
-//     }
-//     res.status(200).send({
-//         status: 'success',
-//         data: { count: tweets.deletedCount },
-//     });
-// }
 
 const UPDATABLE_FIELDS = ['text'];
 const STARTABLE_FIELDS = ['text', 'by'];

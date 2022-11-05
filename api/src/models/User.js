@@ -22,73 +22,23 @@ const userSchema = new Schema({
         type: [String],
         default: undefined,
     },
-    // followers: {
-    //     type: [{
-    //         _id: {
-    //             type: Number,
-    //             required: true,
-    //             ref: 'User',
-    //         },
-    //         username: {
-    //             type: String,
-    //             required: true,
-    //         }
-    //     }],
-    //     default: undefined,
-    // },
     followers: {
         type: [Number],
         default: undefined,
         ref: 'User',
     },
-    // following: {
-    //     type: [{
-    //         _id: {
-    //             type: Number,
-    //             required: true,
-    //             ref: 'User',
-    //         },
-    //         username: {
-    //             type: String,
-    //             required: true,
-    //         }
-    //     }],
-    //     default: undefined,
-    // },
     following: {
         type: [Number],
         default: undefined,
         ref: 'User',
     },
-    // likes: {
-    //     type: [{
-    //         _id: {
-    //             type: Number,
-    //             required: true,
-    //             ref: 'Tweet',
-    //         },
-    //         text: String,
-    //     }],
-    //     default: undefined,
-    // },
-    // tweets: {
-    //     type: [{
-    //         _id: {
-    //             type: Number,
-    //             required: true,
-    //             ref: 'Tweet',
-    //         },
-    //         text: String,
-    //     }],
-    //     default: undefined,
-    // },
     likes: {
         type: [Number],
         default: undefined,
         ref: 'Tweet',
     },
     tweets: {
-        type: [String],
+        type: [Number],
         default: undefined,
         ref: 'Tweet',
     },
