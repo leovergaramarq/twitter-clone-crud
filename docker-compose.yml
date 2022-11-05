@@ -5,24 +5,24 @@ networks:
     name: db-network
 
 services:
-  api:
-    container_name: api
-    restart: unless-stopped
-    build: ./api
-    environment:
-      - NODE_ENV=production
-      - MONGO_URI=mongodb://user:secret@db0:30001,db1:30002,db2:30003/twitter-clone-db
-      - PORT=3000
-    networks:
-      - db-network
-    links:
-      - db0
-      - db1
-      - db2
-    ports:
-      - 3000:3000
-    volumes:
-      - ./api:/usr/src/app
+  # api:
+  #   container_name: api
+  #   restart: unless-stopped
+  #   build: ./api
+  #   environment:
+  #     - NODE_ENV=production
+  #     - MONGO_URI=mongodb://user:secret@db0:30001,db1:30002,db2:30003/twitter-clone-db
+  #     - PORT=3000
+  #   networks:
+  #     - db-network
+  #   links:
+  #     - db0
+  #     - db1
+  #     - db2
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./api:/usr/src/app
   db2:
     hostname: db2
     container_name: db2
@@ -44,6 +44,8 @@ services:
     volumes:
     - ./db/replica.key:/data/replica.key.devel:ro
     - ./db/data2/db:/data/db
+    logging:
+      driver: none
 
   db1:
     hostname: db1
@@ -66,6 +68,8 @@ services:
     volumes:
     - ./db/replica.key:/data/replica.key.devel:ro
     - ./db/data1/db:/data/db
+    logging:
+      driver: none
 
   db0:
     hostname: db0
@@ -97,6 +101,9 @@ services:
     volumes:
     - ./db/replica.key:/data/replica.key.devel:ro
     - ./db/data0/db:/data/db
+    logging:
+      driver: none
+
   db-setup:
     container_name: db-setup
     image: mongo:6.0.2
