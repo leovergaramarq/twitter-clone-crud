@@ -64,7 +64,7 @@ This will start your server on port 3000
 |DELETE /users/:id|Delete user by id||
 |GET /tweets|Get all tweets||
 |GET /tweets/:id|Get tweet by id||
-|POST /tweets|Create tweet|text, by|
+|POST /tweets|Create tweet|text, by (user id)|
 |PUT /tweets/:id|Update tweet by id|text|
 |DELETE /tweets/:id|Delete tweet by id||
 |POST /follow|Follow|user (id), follow (id from user to follow)|
