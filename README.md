@@ -1,6 +1,6 @@
 # twitter-clone-crud
 
-Simple CRUD based on twitter. Resources cover users, tweets, likes, follows and timelines.
+Simple CRUD based on Twitter. Resources cover users, tweets, likes, follows and timelines.
 
 ## Built With
  - [Node.js](https://nodejs.org/es/)
